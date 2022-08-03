@@ -5,29 +5,20 @@
  * copyright (c) 2014 joseph werle
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "b64.h"
 
-#ifdef b64_USE_CUSTOM_MALLOC
-extern void* b64_malloc(size_t);
-#endif
-
-#ifdef b64_USE_CUSTOM_REALLOC
-extern void* b64_realloc(void*, size_t);
-#endif
-
-char *
-b64_encode (const unsigned char *src, size_t len) {
+unsigned int
+b64_encode (const unsigned char *src, unsigned int len) {
   int i = 0;
   int j = 0;
   char *enc = NULL;
-  size_t size = 0;
+  unsigned int size = 0;
   unsigned char buf[4];
   unsigned char tmp[3];
 
-  // alloc
-  enc = (char *) b64_buf_malloc();
+  // "alloc" (just use the memory after src)
+  b64_buf_malloc();
+  enc = (char *) src + len;
   if (NULL == enc) { return NULL; }
 
   // parse until end of source
@@ -46,7 +37,7 @@ b64_encode (const unsigned char *src, size_t len) {
       // then translate each encoded buffer
       // part by index from the base 64 index table
       // into `enc' unsigned char array
-      enc = (char *) b64_buf_realloc(enc, size + 4);
+      enc = (char *) b64_buf_realloc((unsigned char *)enc, size + 4);
       for (i = 0; i < 4; ++i) {
         enc[size++] = b64_table[buf[i]];
       }
@@ -71,21 +62,21 @@ b64_encode (const unsigned char *src, size_t len) {
 
     // perform same write to `enc` with new allocation
     for (j = 0; (j < i + 1); ++j) {
-      enc = (char *) b64_buf_realloc(enc, size + 1);
+      enc = (char *) b64_buf_realloc((unsigned char *)enc, size + 1);
       enc[size++] = b64_table[buf[j]];
     }
 
     // while there is still a remainder
     // append `=' to `enc'
     while ((i++ < 3)) {
-      enc = (char *) b64_buf_realloc(enc, size + 1);
+      enc = (char *) b64_buf_realloc((unsigned char *)enc, size + 1);
       enc[size++] = '=';
     }
   }
 
   // Make sure we have enough space to add '\0' character at end.
-  enc = (char *) b64_buf_realloc(enc, size + 1);
+  enc = (char *) b64_buf_realloc((unsigned char *)enc, size + 1);
   enc[size] = '\0';
 
-  return enc;
+  return size;
 }

@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "b64.h": "c",
+        "ctype.h": "c",
+        "types.h": "c",
+        "cctype": "c"
+    }
+}

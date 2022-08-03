@@ -8,28 +8,19 @@
 #ifndef B64_H
 #define B64_H 1
 
-/**
- *  Memory allocation functions to use. You can define b64_malloc and
- * b64_realloc to custom functions if you want.
- */
-
-#ifndef b64_malloc
-#  define b64_malloc(ptr) malloc(ptr)
-#endif
-#ifndef b64_realloc
-#  define b64_realloc(ptr, size) realloc(ptr, size)
-#endif
+extern unsigned char __heap_base;
+#define NULL 0
 
  // How much memory to allocate per buffer
 #define B64_BUFFER_SIZE		(1024 * 64) // 64K
 
  // Start buffered memory
-char* b64_buf_malloc();
+unsigned char* b64_buf_malloc();
 
 // Update memory size. Returns the same pointer if we
 // have enough space in the buffer. Otherwise, we add
 // additional buffers.
-char* b64_buf_realloc(unsigned char* ptr, size_t size);
+unsigned char* b64_buf_realloc(unsigned char* ptr, unsigned int size);
 
 /**
  * Base64 index table.
@@ -55,22 +46,20 @@ extern "C" {
  * Returns a `char *' base64 encoded string.
  */
 
-char *
-b64_encode (const unsigned char *, size_t);
+unsigned int
+b64_encode (const unsigned char *, unsigned int);
 
 /**
- * Decode `char *' source with `size_t' size.
+ * Decode `char *' source with `unsigned int' size.
  * Returns a `unsigned char *' base64 decoded string.
  */
-unsigned char *
-b64_decode (const char *, size_t);
+unsigned int
+b64_decode (const char *, unsigned int);
 
-/**
- * Decode `char *' source with `size_t' size.
- * Returns a `unsigned char *' base64 decoded string + size of decoded string.
- */
-unsigned char *
-b64_decode_ex (const char *, size_t, size_t *);
+
+int isalnum(int c);
+void * memset ( void * ptr, int value, unsigned long num );
+void * memcpy ( void * destination, const void * source, unsigned long num );
 
 #ifdef __cplusplus
 }

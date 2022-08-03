@@ -3,6 +3,7 @@
 *.ko
 *.obj
 *.elf
+*.wasm
 
 # Libraries
 *.lib
@@ -23,3 +24,4 @@
 *.hex
 deps/
 test
+build/

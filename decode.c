@@ -5,43 +5,28 @@
  * copyright (c) 2014 joseph werle
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
 #include "b64.h"
 
-#ifdef b64_USE_CUSTOM_MALLOC
-extern void* b64_malloc(size_t);
-#endif
-
-#ifdef b64_USE_CUSTOM_REALLOC
-extern void* b64_realloc(void*, size_t);
-#endif
-
-unsigned char *
-b64_decode (const char *src, size_t len) {
-  return b64_decode_ex(src, len, NULL);
-}
-
-unsigned char *
-b64_decode_ex (const char *src, size_t len, size_t *decsize) {
+unsigned int
+b64_decode (const char *src, unsigned int len) {
   int i = 0;
   int j = 0;
   int l = 0;
-  size_t size = 0;
+  unsigned int size = 0;
   unsigned char *dec = NULL;
   unsigned char buf[3];
   unsigned char tmp[4];
 
-  // alloc
-  dec = (unsigned char *) b64_buf_malloc();
+  // "allocate" memory (put result right after input)
+  b64_buf_malloc();
+  dec = (unsigned char *) src + len;
   if (NULL == dec) { return NULL; }
 
   // parse until end of source
   while (len--) {
     // break if char is `=' or not base64 char
     if ('=' == src[j]) { break; }
-    if (!(isalnum(src[j]) || '+' == src[j] || '/' == src[j])) { break; }
+    if (!(isalnum(src[j]) || '-' == src[j] || '_' == src[j])) { break; }
 
     // read up to 4 bytes at a time into `tmp'
     tmp[i++] = src[j++];
@@ -121,10 +106,5 @@ b64_decode_ex (const char *src, size_t len, size_t *decsize) {
     return NULL;
   }
 
-  // Return back the size of decoded string if demanded.
-  if (decsize != NULL) {
-    *decsize = size;
-  }
-
-  return dec;
+  return size;
 }
